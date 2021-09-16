@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mNumbersList = (RecyclerView) findViewById(R.id.rv_numbers);
+        mNumbersList = findViewById(R.id.rv_numbers);
 
         /*
          * A LinearLayoutManager is responsible for measuring and positioning item views within a
@@ -41,13 +41,11 @@ public class MainActivity extends AppCompatActivity {
          */
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mNumbersList.setLayoutManager(layoutManager);
-
         /*
          * Use this setting to improve performance if you know that changes in content do not
          * change the child layout size in the RecyclerView
          */
         mNumbersList.setHasFixedSize(true);
-
         /*
          * The GreenAdapter is responsible for displaying each item in the list.
          */
