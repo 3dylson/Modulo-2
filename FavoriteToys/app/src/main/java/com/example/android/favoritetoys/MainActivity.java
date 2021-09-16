@@ -1,139 +1,60 @@
 package com.example.android.favoritetoys;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.android.favoritetoys.utilities.NetworkUtils;
-
-import java.io.IOException;
-import java.net.URL;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText mSearchBoxEditText;
+    private static final int NUM_LIST_ITEMS = 100;
 
-    private TextView mUrlDisplayTextView;
-
-    private TextView mSearchResultsTextView;
-
-    private TextView mErrorMessageDisplay;
-
-    private ProgressBar mLoadingIndicator;
+    /*
+     * References to RecyclerView and Adapter to reset the list to its
+     * "pretty" state when the reset menu item is clicked.
+     */
+    private GreenAdapter mAdapter;
+    private RecyclerView mNumbersList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSearchBoxEditText = findViewById(R.id.et_search_box);
+        /*
+         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
+         * do things like set the adapter of the RecyclerView and toggle the visibility.
+         */
+        mNumbersList = (RecyclerView) findViewById(R.id.rv_numbers);
 
-        mUrlDisplayTextView = findViewById(R.id.tv_url_display);
-        mSearchResultsTextView = findViewById(R.id.tv_github_search_results_json);
+        /*
+         * A LinearLayoutManager is responsible for measuring and positioning item views within a
+         * RecyclerView into a linear list. This means that it can produce either a horizontal or
+         * vertical list depending on which parameter you pass in to the LinearLayoutManager
+         * constructor. By default, if you don't specify an orientation, you get a vertical list.
+         * In our case, we want a vertical list, so we don't need to pass in an orientation flag to
+         * the LinearLayoutManager constructor.
+         *
+         * There are other LayoutManagers available to display your data in uniform grids,
+         * staggered grids, and more! See the developer documentation for more details.
+         */
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mNumbersList.setLayoutManager(layoutManager);
 
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        /*
+         * Use this setting to improve performance if you know that changes in content do not
+         * change the child layout size in the RecyclerView
+         */
+        mNumbersList.setHasFixedSize(true);
+
+        /*
+         * The GreenAdapter is responsible for displaying each item in the list.
+         */
+        mAdapter = new GreenAdapter(NUM_LIST_ITEMS);
+
+        mNumbersList.setAdapter(mAdapter);
+
     }
 
-    /**
-     * This method retrieves the search text from the EditText, constructs
-     * the URL (using {@link NetworkUtils}) for the github repository you'd like to find, displays
-     * that URL in a TextView, and finally fires off an AsyncTask to perform the GET request using
-     * our {@link GithubQueryTask}
-     */
-    private void makeGithubSearchQuery() {
-        String githubQuery = mSearchBoxEditText.getText().toString();
-        URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
-        mUrlDisplayTextView.setText(githubSearchUrl.toString());
-
-        // Create a new GithubQueryTask and call its execute method, passing in the url to query
-        new GithubQueryTask().execute(githubSearchUrl);
-    }
-
-    /**
-     * This method will make the View for the JSON data visible and
-     * hide the error message.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
-    private void showJsonDataView() {
-        // First, make sure the error is invisible
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        // Then, make sure the JSON data is visible
-        mSearchResultsTextView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * This method will make the error message visible and hide the JSON
-     * View.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
-    private void showErrorMessage() {
-        // First, hide the currently visible data
-        mSearchResultsTextView.setVisibility(View.INVISIBLE);
-        // Then, show the error
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-    }
-
-    public class GithubQueryTask extends AsyncTask<URL, Void, String> {
-
-        // Override doInBackground method to perform the query. Return the results.
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String githubSearchResults = null;
-            try {
-                githubSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return githubSearchResults;
-        }
-
-        //Override onPostExecute to display the results in the TextView
-        @Override
-        protected void onPostExecute(String githubSearchResults) {
-            // As soon as the loading is complete, hide the loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-
-            if (githubSearchResults != null && !githubSearchResults.equals("")) {
-                showJsonDataView();
-                mSearchResultsTextView.setText(githubSearchResults);
-            }  else {
-                // Call showErrorMessage if the result is null in onPostExecute
-                showErrorMessage();
-            }
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemThatWasClickedId = item.getItemId();
-        if (itemThatWasClickedId == R.id.action_search) {
-            /*Context context = MainActivity.this;
-            String textToShow = "Search clicked";
-            Toast.makeText(context, textToShow, Toast.LENGTH_SHORT).show();*/
-            makeGithubSearchQuery();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
