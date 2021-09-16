@@ -3,6 +3,7 @@ package com.example.android.favoritetoys;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,20 +39,38 @@ public class MainActivity extends AppCompatActivity {
      * This method retrieves the search text from the EditText, constructs
      * the URL (using {@link NetworkUtils}) for the github repository you'd like to find, displays
      * that URL in a TextView, and finally fires off an AsyncTask to perform the GET request using
-     * our (not yet created) {@link GithubQueryTask}
+     * our {@link GithubQueryTask}
      */
     private void makeGithubSearchQuery() {
         String githubQuery = mSearchBoxEditText.getText().toString();
         URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
         mUrlDisplayTextView.setText(githubSearchUrl.toString());
 
-        String githubSearchResults = null;
-        // Call getResponseFromHttpUrl and display the results in mSearchResultsTextView
-        try {
-            githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubSearchUrl);
-            mSearchResultsTextView.setText(githubSearchResults);
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Create a new GithubQueryTask and call its execute method, passing in the url to query
+        new GithubQueryTask().execute(githubSearchUrl);
+    }
+
+    public class GithubQueryTask extends AsyncTask<URL, Void, String> {
+
+        // Override doInBackground method to perform the query. Return the results.
+        @Override
+        protected String doInBackground(URL... params) {
+            URL searchUrl = params[0];
+            String githubSearchResults = null;
+            try {
+                githubSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return githubSearchResults;
+        }
+
+        //Override onPostExecute to display the results in the TextView
+        @Override
+        protected void onPostExecute(String githubSearchResults) {
+            if (githubSearchResults != null && !githubSearchResults.equals("")) {
+                mSearchResultsTextView.setText(githubSearchResults);
+            }
         }
     }
 
