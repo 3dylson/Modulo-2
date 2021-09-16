@@ -4,4 +4,7 @@
     <string name="msg_click_search_and_your_url_will_show_up_here">Click search and your URL will show up here!</string>
     <string name="msg_make_a_search">Make a search!</string>
     <string name="action_search">Search</string>
+    <string name="error_message">
+        Failed to get results. Please try again.
+    </string>
 </resources>
