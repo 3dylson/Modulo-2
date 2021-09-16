@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">FavoriteToys</string>
+    <string name="hint_enter_a_query_then_click_search">Enter a query, then click Search</string>
+    <string name="msg_click_search_and_your_url_will_show_up_here">Click search and your URL will show up here!</string>
+    <string name="msg_make_a_search">Make a search!</string>
 </resources>

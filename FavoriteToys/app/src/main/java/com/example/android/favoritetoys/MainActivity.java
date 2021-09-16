@@ -3,23 +3,26 @@ package com.example.android.favoritetoys;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mToysListTextView;
+    private EditText mSearchBoxEditText;
+
+    private TextView mUrlDisplayTextView;
+
+    private TextView mSearchResultsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mToysListTextView = findViewById(R.id.tv_toy_names);
+        mSearchBoxEditText = findViewById(R.id.et_search_box);
 
-        String[] toyNames = ToyBox.getToyNames();
+        mUrlDisplayTextView = findViewById(R.id.tv_url_display);
 
-        for (String toyName : toyNames) {
-            mToysListTextView.append(toyName + "\n\n\n");
-        }
+        mSearchResultsTextView = findViewById(R.id.tv_github_search_results_json);
     }
 }
