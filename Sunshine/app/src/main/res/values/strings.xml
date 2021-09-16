@@ -9,6 +9,12 @@
     <!--or something similar.-->
     <string name="app_name">Sunshine</string>
 
+    <string name="action_refresh">Refresh</string>
+
+    <string name="error_message">
+        An error has occurred. Please try again by clicking REFRESH
+    </string>
+
     <!-- - - - - - - - - - - - - -->
     <!--Used by SunshineDateUtils-->
     <!-- - - - - - - - - - - - - -->
@@ -108,7 +114,6 @@
     <string name="condition_962">Hurricane</string>
 
     <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
-    <string name="action_refresh">Refresh</string>
 
 
     <!-- - - - - - - - - - - -->
