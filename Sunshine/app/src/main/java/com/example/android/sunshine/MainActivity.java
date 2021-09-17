@@ -5,8 +5,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -149,6 +152,29 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         }
     }
 
+    /**
+     * This method uses the URI scheme for showing a location found on a
+     * map. This super-handy intent is detailed in the "Common Intents"
+     * page of Android's developer site:
+     *
+     * @see "http://developer.android.com/guide/components/intents-common.html#Maps"
+
+     */
+    private void openLocationInMap() {
+        String addressString = "1600 Ampitheatre Parkway, CA";
+        Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.d(TAG, "Couldn't call " + geoLocation.toString()
+                    + ", no receiving apps installed!");
+        }
+    }
+
 
     // Override onCreateOptionsMenu to inflate the menu for this Activity
     // Return true to display the menu
@@ -171,6 +197,11 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
             // Instead of setting the text to "", set the adapter to null before refreshing
             mForecastAdapter.setWeatherData(null);
             loadWeatherData();
+            return true;
+        }
+
+        if (id == R.id.action_map) {
+            openLocationInMap();
             return true;
         }
 
