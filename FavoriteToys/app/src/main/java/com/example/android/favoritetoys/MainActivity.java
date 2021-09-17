@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
              */
             @Override
             public void onClick(View v) {
+
+                String textEntered = mNameEntry.getText().toString();
                 /*
                  * Storing the Context in a variable in this case is redundant since we could have
                  * just used "this" or "MainActivity.this" in the method call below. However, we
@@ -46,17 +48,9 @@ public class MainActivity extends AppCompatActivity {
                 /* This is the class that we want to start (and open) when the button is clicked. */
                 Class destinationActivity = ChildActivity.class;
 
-                /*
-                 * Here, we create the Intent that will start the Activity we specified above in
-                 * the destinationActivity variable. The constructor for an Intent also requires a
-                 * context, which we stored in the variable named "context".
-                 */
-                Intent startChildActivityIntent = new Intent(context, destinationActivity);
 
-                /*
-                 * Once the Intent has been created, we can use Activity's method, "startActivity"
-                 * to start the ChildActivity.
-                 */
+                Intent startChildActivityIntent = new Intent(context, destinationActivity);
+                startChildActivityIntent.putExtra(Intent.EXTRA_TEXT, textEntered);
                 startActivity(startChildActivityIntent);
             }
         });
