@@ -1,13 +1,8 @@
 package com.example.android.sunshine;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,13 +13,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.sunshine.data.SunshinePreferences;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.android.sunshine.utils.NetworkUtils;
-import com.example.android.sunshine.utils.OpenWeatherJsonUtils;
 
-import java.net.URL;
-
-public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements
+        ForecastAdapter.ForecastAdapterOnClickHandler {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
     private TextView mErrorMessageDisplay;
@@ -32,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
+
+    private WeatherViewModel weatherViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +51,28 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
 
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-        loadWeatherData();
+        weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
+
+        loadLocationWeather();
+
 
     }
 
-    /**
-     * This method will get the user's preferred location for weather, and then tell some
-     * background method to get the weather data in the background.
-     */
-    private void loadWeatherData() {
-        String location = SunshinePreferences.getPreferredWeatherLocation(this);
-        new FetchWeatherTask().execute(location);
+    private void loadLocationWeather() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        weatherViewModel.loadWeatherData().observe(this, weatherData ->
+                {
+                    mLoadingIndicator.setVisibility(View.INVISIBLE);
+                    if (weatherData != null) {
+                        showWeatherDataView();
+                        mForecastAdapter.setWeatherData(weatherData);
+                    }
+                    else {
+                        showErrorMessage();
+                    }
+                });
     }
+
 
     /**
      * This method will make the View for the weather data visible and
@@ -99,57 +108,6 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         Context context = this;
         Toast.makeText(context, weatherForDay, Toast.LENGTH_SHORT)
                 .show();
-    }
-
-    // Create a class that extends AsyncTask to perform network requests
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-
-        // Override the method onPreExecute and show the loading indicator
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        // Override the doInBackground method to perform network requests
-        @Override
-        protected String[] doInBackground(String... params) {
-
-            /* If there's no zip code, there's nothing to look up. */
-            if (params.length == 0) {
-                return null;
-            }
-
-            String location = params[0];
-            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
-
-            try {
-                String jsonWeatherResponse = NetworkUtils
-                        .getResponseFromHttpUrl(weatherRequestUrl);
-
-                return OpenWeatherJsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        // Override the onPostExecute method to display the results of the network request
-        @Override
-        protected void onPostExecute(String[] weatherData) {
-            // As soon as the data is finished loading, hide the loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (weatherData != null) {
-                showWeatherDataView();
-                // Instead of iterating through every string, use mForecastAdapter.setWeatherData and pass in the weather data
-                mForecastAdapter.setWeatherData(weatherData);
-            } else {
-                // If the weather data was null, show the error message
-                showErrorMessage();
-            }
-        }
     }
 
     /**
@@ -196,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         if (id == R.id.action_refresh) {
             // Instead of setting the text to "", set the adapter to null before refreshing
             mForecastAdapter.setWeatherData(null);
-            loadWeatherData();
+            loadLocationWeather();
             return true;
         }
 
