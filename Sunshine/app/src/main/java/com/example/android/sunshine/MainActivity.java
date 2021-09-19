@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.sunshine.utils.NetworkUtils;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity implements
         ForecastAdapter.ForecastAdapterOnClickHandler {
 
@@ -64,10 +66,11 @@ public class MainActivity extends AppCompatActivity implements
                 {
                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                     if (weatherData != null) {
-                        showWeatherDataView();
                         mForecastAdapter.setWeatherData(weatherData);
+                        showWeatherDataView();
                     }
                     else {
+                        mForecastAdapter.setWeatherData(null);
                         showErrorMessage();
                     }
                 });
@@ -106,8 +109,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(String weatherForDay) {
         Context context = this;
-        Toast.makeText(context, weatherForDay, Toast.LENGTH_SHORT)
-                .show();
+        Class destinationClass = DetailActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
+        startActivity(intentToStartDetailActivity);
     }
 
     /**
@@ -152,14 +157,18 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            // Instead of setting the text to "", set the adapter to null before refreshing
-            mForecastAdapter.setWeatherData(null);
-            loadLocationWeather();
+            //TODO refresh
             return true;
         }
 
         if (id == R.id.action_map) {
             openLocationInMap();
+            return true;
+        }
+
+        if (id == R.id.action_settings) {
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
             return true;
         }
 
