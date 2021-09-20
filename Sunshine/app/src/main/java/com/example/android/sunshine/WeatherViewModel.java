@@ -14,11 +14,12 @@ import com.example.android.sunshine.utils.NetworkUtils;
 import com.example.android.sunshine.utils.OpenWeatherJsonUtils;
 
 import java.net.URL;
+import java.util.Arrays;
 
 public class WeatherViewModel extends AndroidViewModel {
     private final MutableLiveData<String[]> weatherLiveData = new MutableLiveData<>();
 
-    private final Observer<String[]> weatherLiveDataObserver = weatherLiveData -> loadWeatherData();
+    //private final Observer<String[]> weatherLiveDataObserver = weatherLiveData -> loadWeatherData();
 
 
     public WeatherViewModel(@NonNull Application application) {
@@ -30,17 +31,12 @@ public class WeatherViewModel extends AndroidViewModel {
         return weatherLiveData;
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        weatherLiveData.removeObserver(weatherLiveDataObserver);
-    }
 
     public LiveData<String[]> loadWeatherData() {
 
         String location = SunshinePreferences.getPreferredWeatherLocation(getApplication().getApplicationContext());
         new FetchWeatherTask().execute(location);
-        weatherLiveData.observeForever(weatherLiveDataObserver);
+        //weatherLiveData.observeForever(weatherLiveDataObserver);
         return getWeather();
     }
 
@@ -75,5 +71,10 @@ public class WeatherViewModel extends AndroidViewModel {
         }
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        //weatherLiveData.removeObserver(weatherLiveDataObserver);
+    }
 
 }

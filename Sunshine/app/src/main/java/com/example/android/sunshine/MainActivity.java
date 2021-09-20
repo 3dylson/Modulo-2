@@ -2,6 +2,7 @@ package com.example.android.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,13 +16,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utils.NetworkUtils;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity implements
-        ForecastAdapter.ForecastAdapterOnClickHandler {
+        ForecastAdapter.ForecastAdapterOnClickHandler,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
     private TextView mErrorMessageDisplay;
@@ -31,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements
     private ForecastAdapter mForecastAdapter;
 
     private WeatherViewModel weatherViewModel;
+
+    private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,14 @@ public class MainActivity extends AppCompatActivity implements
 
         loadLocationWeather();
 
+        /*
+         * Register MainActivity as an OnPreferenceChangedListener to receive a callback when a
+         * SharedPreference has changed. Please note that we must unregister MainActivity as an
+         * OnSharedPreferenceChanged listener in onDestroy to avoid any memory leaks.
+         */
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
 
     }
 
@@ -64,10 +80,11 @@ public class MainActivity extends AppCompatActivity implements
                 {
                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                     if (weatherData != null) {
-                        showWeatherDataView();
                         mForecastAdapter.setWeatherData(weatherData);
+                        showWeatherDataView();
                     }
                     else {
+                        mForecastAdapter.setWeatherData(null);
                         showErrorMessage();
                     }
                 });
@@ -106,8 +123,16 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(String weatherForDay) {
         Context context = this;
-        Toast.makeText(context, weatherForDay, Toast.LENGTH_SHORT)
-                .show();
+        Class destinationClass = DetailActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
+        startActivity(intentToStartDetailActivity);
+    }
+
+    private void invalidateData() {
+        mForecastAdapter.setWeatherData(null);
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -119,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements
 
      */
     private void openLocationInMap() {
-        String addressString = "1600 Ampitheatre Parkway, CA";
+        String addressString = SunshinePreferences.getPreferredWeatherLocation(this);
         Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -133,6 +158,23 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (PREFERENCES_HAVE_BEEN_UPDATED) {
+            Log.d(TAG, "onStart: preferences were updated");
+            weatherViewModel.loadWeatherData();
+            PREFERENCES_HAVE_BEEN_UPDATED = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /* Unregister MainActivity as an OnPreferenceChangedListener to avoid any memory leaks. */
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
 
     // Override onCreateOptionsMenu to inflate the menu for this Activity
     // Return true to display the menu
@@ -152,9 +194,8 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            // Instead of setting the text to "", set the adapter to null before refreshing
-            mForecastAdapter.setWeatherData(null);
-            loadLocationWeather();
+            invalidateData();
+            weatherViewModel.loadWeatherData();
             return true;
         }
 
@@ -163,6 +204,27 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
 
+        if (id == R.id.action_settings) {
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        /*
+         * Set this flag to true so that when control returns to MainActivity, it can refresh the
+         * data.
+         *
+         * This isn't the ideal solution because there really isn't a need to perform another
+         * GET request just to change the units, but this is the simplest solution that gets the
+         * job done for now. Later in this course, we are going to show you more elegant ways to
+         * handle converting the units from celsius to fahrenheit and back without hitting the
+         * network again by keeping a copy of the data in a manageable format.
+         */
+        PREFERENCES_HAVE_BEEN_UPDATED = true;
     }
 }
