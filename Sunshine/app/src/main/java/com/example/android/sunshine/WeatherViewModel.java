@@ -49,8 +49,7 @@ public class WeatherViewModel extends AndroidViewModel {
                 return null;
             }
 
-            String location = params[0];
-            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+            URL weatherRequestUrl = NetworkUtils.getUrl(getApplication().getApplicationContext());
 
             try {
                 String jsonWeatherResponse = NetworkUtils

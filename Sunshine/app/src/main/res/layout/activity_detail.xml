@@ -12,6 +12,7 @@
         android:id="@+id/tv_display_weather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        tools:text="Saturday, October 1 - Sunny - 78° / 63°"/>
 
 </FrameLayout>
