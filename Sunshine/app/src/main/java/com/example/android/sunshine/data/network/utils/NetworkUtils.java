@@ -1,4 +1,4 @@
-package com.example.android.sunshine.utils;
+package com.example.android.sunshine.data.network.utils;
 
 import android.content.Context;
 import android.net.Uri;
@@ -26,7 +26,7 @@ public final class NetworkUtils {
     private static final String STATIC_WEATHER_URL =
             "https://andfun-weather.udacity.com/staticweather";
 
-    private static final String FORECAST_BASE_URL = STATIC_WEATHER_URL;
+    private static final String FORECAST_BASE_URL = DYNAMIC_WEATHER_URL;
 
     /*
      * NOTE: These values only effect responses from OpenWeatherMap, NOT from the fake weather

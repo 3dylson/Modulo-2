@@ -1,10 +1,12 @@
-package com.example.android.sunshine.utils;
+package com.example.android.sunshine.data.network.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
 
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
+import com.example.android.sunshine.utils.SunshineDateUtils;
+import com.example.android.sunshine.utils.SunshineWeatherUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,7 +17,7 @@ import java.net.HttpURLConnection;
 /**
  * Utility functions to handle OpenWeatherMap JSON data.
  */
-public final class OpenWeatherJsonUtils {
+public final class OpenWeatherJsonParser {
 
     /* Location information */
     private static final String OWM_CITY = "city";
