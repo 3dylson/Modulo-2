@@ -59,7 +59,7 @@ public class SunshineRepository implements DataRetrieved {
         return INSTANCE;
     }
 
-    void fetchWeather() {
+    public void fetchWeather() {
         SunshineDatabase.databaseWriteExecutor.execute(this::getData);
     }
 
@@ -94,7 +94,7 @@ public class SunshineRepository implements DataRetrieved {
      *
      * @return Whether a fetch is needed
      */
-    private boolean isFetchNeeded() {
+    public boolean isFetchNeeded() {
         Date today = SunshineDateUtils.getNormalizedUtcDateForToday();
         int count = mWeatherDao.countAllFutureWeather(today);
         return (count < NUM_DAYS);
@@ -118,6 +118,6 @@ public class SunshineRepository implements DataRetrieved {
 
     @Override
     public void onDataFetchedFailed() {
-
+        mDownloadedWeatherForecasts.postValue(null);
     }
 }

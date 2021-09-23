@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,14 +20,20 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.android.sunshine.presentation.adapters.ForecastAdapter;
-import com.example.android.sunshine.presentation.ui.detail.DetailActivity;
 import com.example.android.sunshine.R;
-import com.example.android.sunshine.presentation.ui.SettingsActivity;
-import com.example.android.sunshine.presentation.viewmodels.WeatherViewModel;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.network.utils.NetworkUtils;
+import com.example.android.sunshine.model.ListWeatherEntry;
+import com.example.android.sunshine.presentation.adapters.ForecastAdapter;
+import com.example.android.sunshine.presentation.ui.SettingsActivity;
+import com.example.android.sunshine.presentation.ui.detail.DetailActivity;
+import com.example.android.sunshine.presentation.viewmodels.WeatherViewModel;
 
+import java.util.Date;
+
+/**
+ * Displays a list of the next 14 days of forecasts
+ */
 public class MainActivity extends AppCompatActivity implements
         ForecastAdapter.ForecastAdapterOnClickHandler,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar mLoadingIndicator;
 
     private RecyclerView mRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
     private ForecastAdapter mForecastAdapter;
 
     private WeatherViewModel weatherViewModel;
@@ -78,12 +86,14 @@ public class MainActivity extends AppCompatActivity implements
 
     private void loadLocationWeather() {
         mLoadingIndicator.setVisibility(View.VISIBLE);
-        weatherViewModel.loadWeatherData().observe(this, weatherData ->
+        weatherViewModel.getForecast().observe(this, weatherData ->
                 {
                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                     if (weatherData != null) {
                         mForecastAdapter.setWeatherData(weatherData);
                         showWeatherDataView();
+                        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                        mRecyclerView.smoothScrollToPosition(mPosition);
                     }
                     else {
                         mForecastAdapter.setWeatherData(null);
@@ -122,15 +132,6 @@ public class MainActivity extends AppCompatActivity implements
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onClick(String weatherForDay) {
-        Context context = this;
-        Class destinationClass = DetailActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
-        startActivity(intentToStartDetailActivity);
-    }
-
     private void invalidateData() {
         mForecastAdapter.setWeatherData(null);
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         if (PREFERENCES_HAVE_BEEN_UPDATED) {
             Log.d(TAG, "onStart: preferences were updated");
-            weatherViewModel.loadWeatherData();
+            weatherViewModel.refresh();
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
     }
@@ -197,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if (id == R.id.action_refresh) {
             invalidateData();
-            weatherViewModel.loadWeatherData();
+            weatherViewModel.refresh();
             return true;
         }
 
@@ -228,5 +229,15 @@ public class MainActivity extends AppCompatActivity implements
          * network again by keeping a copy of the data in a manageable format.
          */
         PREFERENCES_HAVE_BEEN_UPDATED = true;
+    }
+
+
+    @Override
+    public void onClick(ListWeatherEntry weatherForDay) {
+        Context context = this;
+        Class destinationClass = DetailActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay.toString());
+        startActivity(intentToStartDetailActivity);
     }
 }

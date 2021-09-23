@@ -4,20 +4,29 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.sunshine.R;
+import com.example.android.sunshine.data.database.entity.Weather;
+import com.example.android.sunshine.model.ListWeatherEntry;
+import com.example.android.sunshine.presentation.ui.list.MainActivity;
+import com.example.android.sunshine.utils.SunshineDateUtils;
+import com.example.android.sunshine.utils.SunshineWeatherUtils;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * {@link ForecastAdapter} exposes a list of weather forecasts to a
- * {@link androidx.recyclerview.widget.RecyclerView}
+ * Exposes a list of weather forecasts from a list of {@link Weather} to a {@link RecyclerView}.
  */
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
 
-
-    private String[] mWeatherData;
+    private List<ListWeatherEntry> mWeatherData;
 
     private final ForecastAdapterOnClickHandler mClickHandler;
 
@@ -25,7 +34,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      * The interface that receives onClick messages.
      */
     public interface ForecastAdapterOnClickHandler {
-        void onClick(String weatherForDay);
+        void onClick(ListWeatherEntry weatherForDay);
     }
 
 
@@ -50,7 +59,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            String weatherForDay = mWeatherData[adapterPosition];
+            ListWeatherEntry weatherForDay = mWeatherData.get(adapterPosition);
             mClickHandler.onClick(weatherForDay);
         }
     }
@@ -71,19 +80,19 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     @Override
     public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
-        String weatherForThisDay = mWeatherData[position];
-        forecastAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay);
+        ListWeatherEntry weatherForThisDay = mWeatherData.get(position);
+        forecastAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay.toString());
     }
 
 
     @Override
     public int getItemCount() {
         if (null == mWeatherData) return 0;
-        return mWeatherData.length;
+        return mWeatherData.size();
     }
 
 
-    public void setWeatherData(String[] weatherData) {
+    public void setWeatherData(List<ListWeatherEntry> weatherData) {
         mWeatherData = weatherData;
         notifyDataSetChanged();
     }

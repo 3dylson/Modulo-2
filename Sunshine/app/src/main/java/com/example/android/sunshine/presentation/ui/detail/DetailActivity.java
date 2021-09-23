@@ -18,6 +18,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private String mForecast;
     private TextView mWeatherDisplay;
+    public static final String WEATHER_ID_EXTRA = "WEATHER_ID_EXTRA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
