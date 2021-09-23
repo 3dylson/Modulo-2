@@ -1,0 +1,11 @@
+
+U
+java:S1118":Add a private constructor to hide the implicit public one.(ÙòÚ—øÿÿÿÿ
+<
+java:S1168?"&Return an empty array instead of null.(¥¹ï
+<
+java:S1168B"&Return an empty array instead of null.(¥¹ï
+Z
+java:S1172„"CRemove these unused method parameters "context", "forecastJsonStr".( ¦è
+=
+java:S1168†"&Return an empty array instead of null.(¥¹ï

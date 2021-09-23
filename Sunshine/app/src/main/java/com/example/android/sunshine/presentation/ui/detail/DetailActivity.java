@@ -1,8 +1,7 @@
-package com.example.android.sunshine;
+package com.example.android.sunshine.presentation.ui.detail;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ShareCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.android.sunshine.R;
+import com.example.android.sunshine.presentation.ui.SettingsActivity;
+
 public class DetailActivity extends AppCompatActivity {
 
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
     private String mForecast;
     private TextView mWeatherDisplay;
+    public static final String WEATHER_ID_EXTRA = "WEATHER_ID_EXTRA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

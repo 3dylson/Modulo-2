@@ -12,20 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sunshine">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".presentation.ui.SettingsActivity"
             android:exported="true"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".DetailActivity"
+            android:name=".presentation.ui.detail.DetailActivity"
             android:exported="true"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".presentation.ui.list.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".presentation.ui.list.MainActivity" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.ui.list.MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>

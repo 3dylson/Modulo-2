@@ -1,4 +1,4 @@
-package com.example.android.sunshine;
+package com.example.android.sunshine.presentation.ui;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -10,6 +10,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.example.android.sunshine.R;
 import com.example.android.sunshine.data.SunshinePreferences;
 
 /**

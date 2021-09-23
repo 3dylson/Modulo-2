@@ -1,0 +1,19 @@
+
+r
+Bapp/src/main/java/com/example/android/sunshine/DetailActivity.java,f\1\f1d8373d1ffa20162aebc4758e4a438d17502b6d
+p
+@app/src/main/java/com/example/android/sunshine/MainActivity.java,f\7\f714ea19b910e125b9272c60e5b8fcb3438879f1
+{
+Kapp/src/main/java/com/example/android/sunshine/utils/SunshineDateUtils.java,4\0\40c8606ea5bc947a0573c33c74316749b28f764c
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+t
+Dapp/src/main/java/com/example/android/sunshine/WeatherViewModel.java,9\a\9ac5981fa4c5c82fac12aac7c0afcded58105cc4
+v
+Fapp/src/main/java/com/example/android/sunshine/utils/NetworkUtils.java,6\e\6e8080e9b7c88bde76c8b33ac726243deaf9c1df
+|
+Lapp/src/main/java/com/example/android/sunshine/data/SunshinePreferences.java,d\5\d59f56d86e667d5c8f264237fe4cf5d45b92a09b
+x
+Happ/src/main/java/com/example/android/sunshine/data/WeatherContract.java,8\7\87795736658de9e01fe0ed2ef42fa0830a0cdde8
+~
+Napp/src/main/java/com/example/android/sunshine/utils/OpenWeatherJsonUtils.java,5\8\587f2a7300e28f304fcea7d81a1fb1725d7bedd3

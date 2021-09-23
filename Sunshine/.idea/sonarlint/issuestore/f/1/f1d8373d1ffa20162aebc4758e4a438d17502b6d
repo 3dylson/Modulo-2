@@ -1,0 +1,7 @@
+
+y
+java:S1450"^Remove the "mWeatherDisplay" field and declare it as a local variable in the relevant methods.(êªýÃýÿÿÿÿ
+J
+java:S1066"/Merge this if statement with the enclosing one.(£ŸÎÚþÿÿÿÿ
+~
+java:S14883"cImmediately return this expression instead of assigning it to the temporary variable "shareIntent".(ª€µÈÿÿÿÿÿ
