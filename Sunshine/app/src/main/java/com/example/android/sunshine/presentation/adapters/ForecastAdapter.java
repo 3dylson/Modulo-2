@@ -1,4 +1,4 @@
-package com.example.android.sunshine;
+package com.example.android.sunshine.presentation.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.android.sunshine.R;
 
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts to a

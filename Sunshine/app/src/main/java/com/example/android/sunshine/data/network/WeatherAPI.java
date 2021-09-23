@@ -10,6 +10,8 @@ import static com.example.android.sunshine.data.network.ServerValues.WEATHER;
 
 import com.example.android.sunshine.data.network.responsemodels.WeatherResponse;
 
+import java.net.URL;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -17,7 +19,7 @@ import retrofit2.http.Query;
 public interface WeatherAPI {
 
     @GET(WEATHER)
-    Call<WeatherResponse> getCurrentWeatherWithLatitudeLongitude(@Query(LAT_PARAM) String latitude,
+    Call<String> getCurrentWeatherWithLatitudeLongitude(@Query(LAT_PARAM) String latitude,
                                                                  @Query(LON_PARAM) String longitude,
                                                                  @Query(FORMAT_PARAM) String format,
                                                                  @Query(UNITS_PARAM) String units,
@@ -25,7 +27,7 @@ public interface WeatherAPI {
 
 
     @GET(WEATHER)
-    Call<WeatherResponse> getCurrentWeatherWithLocation(@Query(QUERY_PARAM) String location,
+    Call<String> getCurrentWeatherWithLocation(@Query(QUERY_PARAM) String location,
                                                         @Query(FORMAT_PARAM) String format,
                                                         @Query(UNITS_PARAM) String units,
                                                         @Query(DAYS_PARAM) String numDays);

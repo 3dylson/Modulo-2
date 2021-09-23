@@ -1,0 +1,21 @@
+
+Q	java:S125"<This block of commented-out lines of code should be removed.(ƒöˆï
+L
+java:S1874&"/Remove this use of "execute"; it is deprecated.(“¥Îí8¼ã®–À/
+Q	java:S125'"<This block of commented-out lines of code should be removed.(³â¨
+N
+java:S1874+"1Remove this use of "AsyncTask"; it is deprecated.(Ï‰–”8Òô¯–À/
+<
+java:S11681"&Return an empty array instead of null.(¥¹ï
+<
+java:S1168@"&Return an empty array instead of null.(¥¹ï
+g
+java:S1874E"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(”“ï¯8ìô¯–À/
+C
+java:S1185K"(Remove this method to simply inherit it.(Áüõöùÿÿÿÿ
+V	java:S125M"<This block of commented-out lines of code should be removed.(ê°„åøÿÿÿÿ
+S
+java:S1128
+"8Remove this unused import 'androidx.lifecycle.Observer'.(ÒÁˆÉşÿÿÿÿ
+H
+java:S1128"-Remove this unused import 'java.util.Arrays'.(î–˜Éüÿÿÿÿ

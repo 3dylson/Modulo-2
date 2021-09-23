@@ -17,7 +17,7 @@ public class WeatherResponse {
     }
 
     @NonNull
-    public Weather[] getmWeatherForecast() {
+    public Weather[] getWeatherForecast() {
         return mWeatherForecast;
     }
 }

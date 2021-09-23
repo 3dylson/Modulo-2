@@ -1,4 +1,4 @@
-package com.example.android.sunshine;
+package com.example.android.sunshine.presentation.ui.list;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,10 +19,13 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android.sunshine.presentation.adapters.ForecastAdapter;
+import com.example.android.sunshine.presentation.ui.detail.DetailActivity;
+import com.example.android.sunshine.R;
+import com.example.android.sunshine.presentation.ui.SettingsActivity;
+import com.example.android.sunshine.presentation.viewmodels.WeatherViewModel;
 import com.example.android.sunshine.data.SunshinePreferences;
-import com.example.android.sunshine.utils.NetworkUtils;
-
-import java.util.Arrays;
+import com.example.android.sunshine.data.network.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity implements
         ForecastAdapter.ForecastAdapterOnClickHandler,

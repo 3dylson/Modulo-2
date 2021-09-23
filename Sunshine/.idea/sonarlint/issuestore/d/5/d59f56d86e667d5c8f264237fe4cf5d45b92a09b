@@ -1,0 +1,8 @@
+
+U
+java:S1118
+":Add a private constructor to hide the implicit public one.(ı“áÙüÿÿÿÿ
+
+java:S1488§"lImmediately return this expression instead of assigning it to the temporary variable "lastNotificationTime".(öÀûÿÿÿÿ8¦Œ»¿À/
+
+java:S1488·"qImmediately return this expression instead of assigning it to the temporary variable "timeSinceLastNotification".(°¢¾=8®Œ»¿À/
