@@ -18,6 +18,8 @@ import android.content.Context;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,12 +35,12 @@ public class SunshineRepository implements DataRetrieved {
     private final WeatherDao mWeatherDao;
     private final Context context;
     // LiveData storing the latest downloaded weather forecasts
-    private final MutableLiveData<Weather[]> mDownloadedWeatherForecasts;
+    private final MutableLiveData<Weather[]> mDownloadedWeatherForecasts = new MutableLiveData<>();
+    private final Weather[] emptyList = (Weather[]) new ArrayList<>().toArray(new Weather[0]);
 
-    SunshineRepository(WeatherDao mWeatherDao, Context context, MutableLiveData<Weather[]> mDownloadedWeatherForecasts){
+    SunshineRepository(WeatherDao mWeatherDao, Context context){
         this.mWeatherDao = mWeatherDao;
         this.context = context;
-        this.mDownloadedWeatherForecasts = mDownloadedWeatherForecasts;
 
         fetchWeather();
 
@@ -50,10 +52,10 @@ public class SunshineRepository implements DataRetrieved {
         });
     }
 
-    public synchronized static SunshineRepository getInstance(WeatherDao weatherDao, Context context, MutableLiveData<Weather[]> mutableLiveData) {
+    public synchronized static SunshineRepository getInstance(WeatherDao weatherDao, Context context) {
         if (INSTANCE == null) {
             synchronized (LOCK) {
-                INSTANCE = new SunshineRepository(weatherDao, context, mutableLiveData);
+                INSTANCE = new SunshineRepository(weatherDao, context);
             }
         }
         return INSTANCE;
@@ -118,6 +120,6 @@ public class SunshineRepository implements DataRetrieved {
 
     @Override
     public void onDataFetchedFailed() {
-        mDownloadedWeatherForecasts.postValue(null);
+        mDownloadedWeatherForecasts.postValue(emptyList);
     }
 }

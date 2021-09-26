@@ -82,7 +82,7 @@ public final class SunshineWeatherUtils {
      *
      * @return Wind String in the following form: "2 km/h SW"
      */
-    public static String getFormattedWind(Context context, float windSpeed, float degrees) {
+    public static String getFormattedWind(Context context, double windSpeed, double degrees) {
         int windFormat = R.string.format_wind_kmh;
 
         if (!SunshinePreferences.isMetric(context)) {

@@ -8,7 +8,6 @@ import static com.example.android.sunshine.data.network.ServerValues.UNITS;
 import android.util.Log;
 
 import com.example.android.sunshine.data.network.cb.DataRetrieved;
-import com.example.android.sunshine.data.network.responsemodels.WeatherResponse;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -16,7 +15,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
