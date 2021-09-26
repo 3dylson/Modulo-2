@@ -164,9 +164,8 @@ public final class SunshinePreferences {
          * time of the last notification was 0, the difference will always be greater than the
          * number of milliseconds in a day and we will show another notification.
          */
-        long lastNotificationTime = sp.getLong(lastNotificationKey, 0);
 
-        return lastNotificationTime;
+        return sp.getLong(lastNotificationKey, 0);
     }
 
     /**
@@ -180,8 +179,7 @@ public final class SunshinePreferences {
     public static long getEllapsedTimeSinceLastNotification(Context context) {
         long lastNotificationTimeMillis =
                 SunshinePreferences.getLastNotificationTimeInMillis(context);
-        long timeSinceLastNotification = System.currentTimeMillis() - lastNotificationTimeMillis;
-        return timeSinceLastNotification;
+        return System.currentTimeMillis() - lastNotificationTimeMillis;
     }
 
     /**

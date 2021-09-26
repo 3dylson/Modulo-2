@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_forecast);
 
         mRecyclerView = findViewById(R.id.recyclerview_forecast);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -65,11 +66,8 @@ public class MainActivity extends AppCompatActivity implements
         mForecastAdapter = new ForecastAdapter(this,this);
         mRecyclerView.setAdapter(mForecastAdapter);
 
-        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
-
         weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
 
-        loadLocationWeather();
 
         /*
          * Register MainActivity as an OnPreferenceChangedListener to receive a callback when a
@@ -79,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements
         PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
 
+
+
+        loadLocationWeather();
 
     }
 
@@ -90,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements
 
             // Show the weather list or the loading screen based on whether the forecast data exists
             // and is loaded
-            if (listWeatherEntries != null && listWeatherEntries.size() != 0) showWeatherDataView();
+            if (listWeatherEntries != null && listWeatherEntries.size() != 0)
+                showWeatherDataView();
             else showLoading();
         });
     }

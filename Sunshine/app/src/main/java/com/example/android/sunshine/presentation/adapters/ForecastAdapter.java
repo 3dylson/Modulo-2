@@ -1,7 +1,6 @@
 package com.example.android.sunshine.presentation.adapters;
 
 import android.content.Context;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import com.example.android.sunshine.utils.SunshineWeatherUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Exposes a list of weather forecasts from a list of {@link Weather} to a {@link RecyclerView}.
@@ -74,8 +72,9 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      *                  for more details.
      * @return A new ForecastAdapterViewHolder that holds the View for each list item
      */
+    @NonNull
     @Override
-    public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ForecastAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         int layoutId = getLayoutIdByType(viewType);
         View view = LayoutInflater.from(mContext).inflate(layoutId, viewGroup, false);
@@ -95,6 +94,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      */
     @Override
     public void onBindViewHolder(@NonNull ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
+        populateList(forecastAdapterViewHolder, position);
+    }
+
+    private void populateList(@NonNull ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
         ListWeatherEntry currentWeather = mForecast.get(position);
 
         /****************
@@ -108,7 +111,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
          * Weather Date *
          ****************/
         long dateInMillis = currentWeather.getDate().getTime();
-         //Get human readable string using our utility method
+        //Get human readable string using our utility method
         String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
 
         // Display friendly date string
@@ -118,10 +121,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
          * Weather Description *
          ***********************/
         String description = SunshineWeatherUtils.getStringForWeatherCondition(mContext, weatherIconId);
-         //Create the accessibility (a11y) String from the weather description
+        //Create the accessibility (a11y) String from the weather description
         String descriptionA11y = mContext.getString(R.string.a11y_forecast, description);
 
-         /*Set the text and content description (for accessibility purposes)*/
+        /*Set the text and content description (for accessibility purposes)*/
         forecastAdapterViewHolder.descriptionView.setText(description);
         forecastAdapterViewHolder.descriptionView.setContentDescription(descriptionA11y);
 
@@ -130,15 +133,15 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
          **************************/
         double highInCelsius = currentWeather.getMax();
 
-         /** If the user's preference for weather is fahrenheit, formatTemperature will convert
-         * the temperature. This method will also append either °C or °F to the temperature
-         * String.*/
+        /** If the user's preference for weather is fahrenheit, formatTemperature will convert
+        * the temperature. This method will also append either °C or °F to the temperature
+        * String.*/
 
         String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
-         /*Create the accessibility (a11y) String from the weather description*/
+        /*Create the accessibility (a11y) String from the weather description*/
         String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
 
-         /*Set the text and content description (for accessibility purposes)*/
+        /*Set the text and content description (for accessibility purposes)*/
         forecastAdapterViewHolder.highTempView.setText(highString);
         forecastAdapterViewHolder.highTempView.setContentDescription(highA11y);
 
@@ -147,14 +150,14 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
          *************************/
         double lowInCelsius = currentWeather.getMin();
 
-         /** If the user's preference for weather is fahrenheit, formatTemperature will convert
-         * the temperature. This method will also append either °C or °F to the temperature
-         * String.*/
+        /** If the user's preference for weather is fahrenheit, formatTemperature will convert
+        * the temperature. This method will also append either °C or °F to the temperature
+        * String.*/
 
         String lowString = SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
         String lowA11y = mContext.getString(R.string.a11y_low_temp, lowString);
 
-         /*Set the text and content description (for accessibility purposes)*/
+        /*Set the text and content description (for accessibility purposes)*/
         forecastAdapterViewHolder.lowTempView.setText(lowString);
         forecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
     }
