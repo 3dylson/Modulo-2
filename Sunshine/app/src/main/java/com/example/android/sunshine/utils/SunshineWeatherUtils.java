@@ -23,8 +23,7 @@ public final class SunshineWeatherUtils {
      * @return Temperature in degrees Fahrenheit (°F)
      */
     private static double celsiusToFahrenheit(double temperatureInCelsius) {
-        double temperatureInFahrenheit = (temperatureInCelsius * 1.8) + 32;
-        return temperatureInFahrenheit;
+        return (temperatureInCelsius * 1.8) + 32;
     }
 
     /**
@@ -67,8 +66,7 @@ public final class SunshineWeatherUtils {
         String formattedHigh = formatTemperature(context, roundedHigh);
         String formattedLow = formatTemperature(context, roundedLow);
 
-        String highLowStr = formattedHigh + " / " + formattedLow;
-        return highLowStr;
+        return formattedHigh + " / " + formattedLow;
     }
 
     /**
@@ -82,7 +80,7 @@ public final class SunshineWeatherUtils {
      *
      * @return Wind String in the following form: "2 km/h SW"
      */
-    public static String getFormattedWind(Context context, float windSpeed, float degrees) {
+    public static String getFormattedWind(Context context, double windSpeed, double degrees) {
         int windFormat = R.string.format_wind_kmh;
 
         if (!SunshinePreferences.isMetric(context)) {

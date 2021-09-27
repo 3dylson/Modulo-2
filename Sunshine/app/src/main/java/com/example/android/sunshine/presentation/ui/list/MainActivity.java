@@ -1,45 +1,46 @@
 package com.example.android.sunshine.presentation.ui.list;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.android.sunshine.R;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.network.utils.NetworkUtils;
-import com.example.android.sunshine.model.ListWeatherEntry;
 import com.example.android.sunshine.presentation.adapters.ForecastAdapter;
 import com.example.android.sunshine.presentation.ui.SettingsActivity;
 import com.example.android.sunshine.presentation.ui.detail.DetailActivity;
 import com.example.android.sunshine.presentation.viewmodels.WeatherViewModel;
+import com.example.android.sunshine.workers.FetchWorker;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Displays a list of the next 14 days of forecasts
  */
 public class MainActivity extends AppCompatActivity implements
-        ForecastAdapter.ForecastAdapterOnClickHandler,
+        ForecastAdapter.ForecastAdapterOnItemClickHandler,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
-    private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
 
     private RecyclerView mRecyclerView;
@@ -50,28 +51,31 @@ public class MainActivity extends AppCompatActivity implements
 
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
 
+    private PeriodicWorkRequest mPeriodicWorkRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
-        mRecyclerView = findViewById(R.id.recyclerview_forecast);
-        mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
+        setupWorker();
 
+        mRecyclerView = findViewById(R.id.recyclerview_forecast);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+
+        showLoading();
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mForecastAdapter = new ForecastAdapter(this);
-        mRecyclerView.setAdapter(mForecastAdapter);
 
-        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+        mForecastAdapter = new ForecastAdapter(this,this);
+        mRecyclerView.setAdapter(mForecastAdapter);
 
         weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
 
-        loadLocationWeather();
 
         /*
          * Register MainActivity as an OnPreferenceChangedListener to receive a callback when a
@@ -82,24 +86,37 @@ public class MainActivity extends AppCompatActivity implements
                 .registerOnSharedPreferenceChangeListener(this);
 
 
+
+        loadLocationWeather();
+
+    }
+
+    private void setupWorker() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .build();
+
+        mPeriodicWorkRequest = new PeriodicWorkRequest.Builder(FetchWorker.class,
+                24, TimeUnit.HOURS)
+                .setConstraints(constraints)
+                .addTag("fetchData")
+                .build();
+
+        WorkManager.getInstance(getApplicationContext()).enqueue(mPeriodicWorkRequest);
     }
 
     private void loadLocationWeather() {
-        mLoadingIndicator.setVisibility(View.VISIBLE);
-        weatherViewModel.getForecast().observe(this, weatherData ->
-                {
-                    mLoadingIndicator.setVisibility(View.INVISIBLE);
-                    if (weatherData != null) {
-                        mForecastAdapter.setWeatherData(weatherData);
-                        showWeatherDataView();
-                        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                        mRecyclerView.smoothScrollToPosition(mPosition);
-                    }
-                    else {
-                        mForecastAdapter.setWeatherData(null);
-                        showErrorMessage();
-                    }
-                });
+        weatherViewModel.getForecast().observe(this, listWeatherEntries -> {
+            mForecastAdapter.swapForecast(listWeatherEntries);
+            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+            mRecyclerView.smoothScrollToPosition(mPosition);
+
+            // Show the weather list or the loading screen based on whether the forecast data exists
+            // and is loaded
+            if (listWeatherEntries != null && listWeatherEntries.size() != 0)
+                showWeatherDataView();
+            else showLoading();
+        });
     }
 
 
@@ -111,32 +128,12 @@ public class MainActivity extends AppCompatActivity implements
      * need to check whether each view is currently visible or invisible.
      */
     private void showWeatherDataView() {
-        /* First, make sure the error is invisible */
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then, make sure the weather data is visible */
+        // First, hide the loading indicator
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        // Finally, make sure the weather data is visible
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
-
-    /**
-     * This method will make the error message visible and hide the weather
-     * View.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
-    private void showErrorMessage() {
-        /* First, hide the currently visible data */
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        /* Then, show the error */
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-    }
-
-    private void invalidateData() {
-        mForecastAdapter.setWeatherData(null);
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mLoadingIndicator.setVisibility(View.VISIBLE);
-    }
 
     /**
      * This method uses the URI scheme for showing a location found on a
@@ -166,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         if (PREFERENCES_HAVE_BEEN_UPDATED) {
             Log.d(TAG, "onStart: preferences were updated");
+            showLoading();
             weatherViewModel.refresh();
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
@@ -197,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            invalidateData();
+            showLoading();
             weatherViewModel.refresh();
             return true;
         }
@@ -231,13 +229,32 @@ public class MainActivity extends AppCompatActivity implements
         PREFERENCES_HAVE_BEEN_UPDATED = true;
     }
 
+    /**
+     * This method will make the loading indicator visible and hide the weather View and error
+     * message.
+     * <p>
+     * Since it is okay to redundantly set the visibility of a View, we don't need to check whether
+     * each view is currently visible or invisible.
+     */
+    private void showLoading() {
+        // Then, hide the weather data
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        // Finally, show the loading indicator
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
 
+
+
+    /**
+     * This method is for responding to clicks from our list.
+     *
+     * @param date Date of forecast
+     */
     @Override
-    public void onClick(ListWeatherEntry weatherForDay) {
-        Context context = this;
-        Class destinationClass = DetailActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay.toString());
-        startActivity(intentToStartDetailActivity);
+    public void onItemClick(Date date) {
+        Intent weatherDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        long timestamp = date.getTime();
+        weatherDetailIntent.putExtra(DetailActivity.WEATHER_ID_EXTRA, timestamp);
+        startActivity(weatherDetailIntent);
     }
 }

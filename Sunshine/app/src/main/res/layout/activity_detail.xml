@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
+    android:orientation="vertical"
     tools:context=".presentation.ui.detail.DetailActivity">
 
-    <TextView
-        android:id="@+id/tv_display_weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        tools:text="Saturday, October 1 - Sunny - 78° / 63°"/>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - To efficiently re-use complete layouts, you can use the <include/> tags to embed     -
+  - another complete layout inside the current layout. In Sunshine, this allows us to    -
+  - conveniently create layouts for both the portrait and landscape layouts for the      -
+  - DetailActivity. If we hadn't have used <include/> tags, we would have duplicated     -
+  - layout code all over the place, and any changes we wanted to make, we'd have to make -
+  - twice.                                                                               -
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-</FrameLayout>
+    <include
+        android:id="@+id/primary_info"
+        layout="@layout/primary_weather_info"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <include
+        android:id="@+id/extra_details"
+        layout="@layout/extra_weather_details"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

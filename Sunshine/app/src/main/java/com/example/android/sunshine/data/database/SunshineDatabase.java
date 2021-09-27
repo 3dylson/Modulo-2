@@ -50,6 +50,6 @@ public abstract class SunshineDatabase extends RoomDatabase {
     // The associated DAOs for the database
     public abstract WeatherDao weatherDao();
 
-    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(2);
+    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(3);
 
 }

@@ -10,7 +10,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.android.sunshine.data.database.SunshineDatabase;
 import com.example.android.sunshine.data.database.entity.Weather;
 import com.example.android.sunshine.data.network.SunshineRepository;
-import com.example.android.sunshine.data.network.responsemodels.WeatherResponse;
 import com.example.android.sunshine.model.ListWeatherEntry;
 
 import java.util.List;
@@ -23,8 +22,7 @@ public class WeatherViewModel extends AndroidViewModel {
     public WeatherViewModel(@NonNull Application application) {
         super(application);
         SunshineDatabase database = SunshineDatabase.getInstance(application);
-        MutableLiveData<Weather[]> data = new MutableLiveData<>();
-        mRepository = SunshineRepository.getInstance(database.weatherDao(), application, data);
+        mRepository = SunshineRepository.getInstance(database.weatherDao(), application);
         mForecast = mRepository.getCurrentWeatherForecasts();
     }
 

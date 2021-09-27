@@ -11,13 +11,17 @@ import com.example.android.sunshine.data.network.cb.DataRetrieved;
 import com.example.android.sunshine.data.network.responsemodels.WeatherResponse;
 import com.example.android.sunshine.data.network.utils.OpenWeatherJsonParser;
 import com.example.android.sunshine.model.ListWeatherEntry;
+import com.example.android.sunshine.utils.NotificationUtils;
 import com.example.android.sunshine.utils.SunshineDateUtils;
 import static com.example.android.sunshine.data.network.ServerValues.NUM_DAYS;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,12 +37,13 @@ public class SunshineRepository implements DataRetrieved {
     private final WeatherDao mWeatherDao;
     private final Context context;
     // LiveData storing the latest downloaded weather forecasts
-    private final MutableLiveData<Weather[]> mDownloadedWeatherForecasts;
+    private final MutableLiveData<Weather[]> mDownloadedWeatherForecasts = new MutableLiveData<>();
+    private final Weather[] emptyList = (Weather[]) new ArrayList<>().toArray(new Weather[0]);
+    private Weather todayWeather;
 
-    SunshineRepository(WeatherDao mWeatherDao, Context context, MutableLiveData<Weather[]> mDownloadedWeatherForecasts){
+    SunshineRepository(WeatherDao mWeatherDao, Context context){
         this.mWeatherDao = mWeatherDao;
         this.context = context;
-        this.mDownloadedWeatherForecasts = mDownloadedWeatherForecasts;
 
         fetchWeather();
 
@@ -46,14 +51,16 @@ public class SunshineRepository implements DataRetrieved {
             SunshineDatabase.databaseWriteExecutor.execute(()->{
                 deleteOldData();
                 mWeatherDao.bulkInsert(newForeCastsFromNetwork);
+                todayWeather = newForeCastsFromNetwork.clone()[0];
             });
         });
+
     }
 
-    public synchronized static SunshineRepository getInstance(WeatherDao weatherDao, Context context, MutableLiveData<Weather[]> mutableLiveData) {
+    public synchronized static SunshineRepository getInstance(WeatherDao weatherDao, Context context) {
         if (INSTANCE == null) {
             synchronized (LOCK) {
-                INSTANCE = new SunshineRepository(weatherDao, context, mutableLiveData);
+                INSTANCE = new SunshineRepository(weatherDao, context);
             }
         }
         return INSTANCE;
@@ -108,6 +115,33 @@ public class SunshineRepository implements DataRetrieved {
             WeatherResponse response = new OpenWeatherJsonParser().parse(forecast);
             if (response != null && response.getWeatherForecast().length != 0) {
                 mDownloadedWeatherForecasts.postValue(response.getWeatherForecast());
+                /*
+                 * Finally, after we insert data, determine whether or not
+                 * we should notify the user that the weather has been refreshed.
+                 */
+                boolean notificationsEnabled = SunshinePreferences.areNotificationsEnabled(context);
+
+                /*
+                 * If the last notification was shown was more than 1 day ago, we want to send
+                 * another notification to the user that the weather has been updated. Remember,
+                 * it's important that you shouldn't spam your users with notifications.
+                 */
+                long timeSinceLastNotification = SunshinePreferences
+                        .getEllapsedTimeSinceLastNotification(context);
+
+                boolean oneDayPassedSinceLastNotification = false;
+
+                if (timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
+                    oneDayPassedSinceLastNotification = true;
+                }
+
+                /*
+                 * We only want to show the notification if the user wants them shown and we
+                 * haven't shown a notification in the past day.
+                 */
+                if (todayWeather != null && notificationsEnabled && oneDayPassedSinceLastNotification) {
+                    NotificationUtils.notifyUserOfNewWeather(context, todayWeather );
+                }
             }
 
         } catch (JSONException e) {
@@ -118,6 +152,6 @@ public class SunshineRepository implements DataRetrieved {
 
     @Override
     public void onDataFetchedFailed() {
-        mDownloadedWeatherForecasts.postValue(null);
+        mDownloadedWeatherForecasts.postValue(emptyList);
     }
 }

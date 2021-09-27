@@ -31,6 +31,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -55,6 +59,9 @@ dependencies {
     // room
     implementation 'androidx.room:room-runtime:2.4.0-alpha04'
     annotationProcessor 'androidx.room:room-compiler:2.4.0-alpha04'
+
+    // work manager
+    implementation "androidx.work:work-runtime:2.6.0"
 
 
     testImplementation 'junit:junit:4.+'
