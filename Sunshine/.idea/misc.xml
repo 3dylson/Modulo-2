@@ -10,7 +10,7 @@
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/drawable/today_touch_selector.xml" value="0.1" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/drawable/touch_selector.xml" value="0.21296296296296297" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/layout/activity_detail.xml" value="0.22" />
-        <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/layout/activity_forecast.xml" value="0.16296296296296298" />
+        <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/layout/activity_forecast.xml" value="0.33" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/layout/activity_main.xml" value="0.18981481481481483" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/layout/extra_weather_details.xml" value="0.5" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/layout/forecast_list_item.xml" value="0.33" />
@@ -20,6 +20,7 @@
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/menu/detail.xml" value="0.33489583333333334" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/menu/forecast.xml" value="0.25" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.38055555555555554" />
+        <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/xml/pref_general.xml" value="0.29270833333333335" />
         <entry key="..\:/Users/Edyls/Documents/ITSector/Internship/Academia_Android/Modulo2/Sunshine/app/src/main/res/xml/root_preferences.xml" value="0.22" />
       </map>
     </option>
