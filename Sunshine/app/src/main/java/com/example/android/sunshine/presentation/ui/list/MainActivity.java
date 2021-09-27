@@ -1,35 +1,37 @@
 package com.example.android.sunshine.presentation.ui.list;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.android.sunshine.R;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.network.utils.NetworkUtils;
-import com.example.android.sunshine.model.ListWeatherEntry;
 import com.example.android.sunshine.presentation.adapters.ForecastAdapter;
 import com.example.android.sunshine.presentation.ui.SettingsActivity;
 import com.example.android.sunshine.presentation.ui.detail.DetailActivity;
 import com.example.android.sunshine.presentation.viewmodels.WeatherViewModel;
+import com.example.android.sunshine.workers.FetchWorker;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Displays a list of the next 14 days of forecasts
@@ -49,13 +51,19 @@ public class MainActivity extends AppCompatActivity implements
 
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
 
+    private PeriodicWorkRequest mPeriodicWorkRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
+        setupWorker();
+
         mRecyclerView = findViewById(R.id.recyclerview_forecast);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+
+        showLoading();
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -81,6 +89,20 @@ public class MainActivity extends AppCompatActivity implements
 
         loadLocationWeather();
 
+    }
+
+    private void setupWorker() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .build();
+
+        mPeriodicWorkRequest = new PeriodicWorkRequest.Builder(FetchWorker.class,
+                24, TimeUnit.HOURS)
+                .setConstraints(constraints)
+                .addTag("fetchData")
+                .build();
+
+        WorkManager.getInstance(getApplicationContext()).enqueue(mPeriodicWorkRequest);
     }
 
     private void loadLocationWeather() {
@@ -141,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         if (PREFERENCES_HAVE_BEEN_UPDATED) {
             Log.d(TAG, "onStart: preferences were updated");
+            showLoading();
             weatherViewModel.refresh();
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
@@ -172,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
+            showLoading();
             weatherViewModel.refresh();
             return true;
         }

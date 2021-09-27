@@ -2,7 +2,7 @@ package com.example.android.sunshine.data.network;
 
 import com.example.android.sunshine.BuildConfig;
 
-class ServerValues {
+final class ServerValues {
     static final String BASE_URL = "https://andfun-weather.udacity.com/";
     static final String API_KEY = BuildConfig.API_KEY;
 
@@ -32,5 +32,8 @@ class ServerValues {
     static final String UNITS_PARAM = "units";
     /* The days parameter allows us to designate how many days of weather data we want */
     static final String DAYS_PARAM = "cnt";
+
+    // Ensures this class is never instantiated
+    private ServerValues() {}
 
 }
